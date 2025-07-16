@@ -5,8 +5,7 @@
 This repository hosts a machine learning project focused on predicting key agricultural metrics: **Production**, **Area harvested**, and **Yield**. It includes data processing, exploratory data analysis (EDA), model training, evaluation, and a Streamlit application for interactive predictions and historical data visualization.
 
 ## 📁 Folder Structure
-crop-prediction-system/
-├── data/
+crop-prediction-system/                                               ├── data/
 │   ├── crop1.csv                     # Raw input dataset
 │   └── improve/                      # Processed data outputs
 │       ├── crop1_clean.csv
