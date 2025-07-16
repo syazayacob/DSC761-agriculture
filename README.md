@@ -18,13 +18,12 @@ crop-prediction-system/
 │       ├── Production_ANN_scaler.pkl
 │       ├── Production_RandomForest.pkl
 │       └── ... (other models and scalers for Area harvested, Yield)
-├── notebooks/                        # Placeholder for future EDA or advanced analysis notebooks
-├── src/                              # Source code for data processing, training, etc.
-│   ├── data_processing.py
-│   ├── model_training.py
-│   ├── model_evaluation.py
-│   └── visualization.py
-├── streamlit_app.py                  # Streamlit dashboard for predictions and trends
+├── notebooks/                        # Source code for data processing, training, etc.
+│   ├── 012_data_preprocessing_improve.ipynb
+│   ├── 022_visualization.ipynb
+│   ├── 032_model_training.ipynb
+│   └── 042_evaluation.ipynb
+├── streamlit_app_improve.py                  # Streamlit dashboard for predictions and trends
 ├── requirements.txt                  # Required Python packages
 └── README.md
 
@@ -68,7 +67,7 @@ The `src/model_evaluation.py` script loads the trained models and evaluates thei
 - **Visualizations**: Generates scatter plots of actual vs. predicted values and a bar plot comparing R² scores across all models and targets.
 
 ### 5. Streamlit Application
-The `streamlit_app.py` provides an interactive web interface:
+The `streamlit_app_improve.py` provides an interactive web interface:
 - **Prediction**: Users can input features and get predictions for 'Production', 'Area harvested', or 'Yield' using different trained models.
 - **Explainable AI (XAI)**: Offers simple feature importance visualizations for tree-based and linear models (bar charts).
 - **3D Visualization**: Allows users to visualize the relationship between two input features and the predicted output in a 3D scatter plot.
@@ -79,43 +78,42 @@ The `streamlit_app.py` provides an interactive web interface:
 ## 🚀 Getting Started
 
 ### Prerequisites
-Ensure you have Python 3.8+ installed.
+Ensure you have Python 3.10+ installed.
 
 ### Setup
 1. **Clone the repository:**
    git clone [https://github.com/syazayacob/DSC761-agriculture.git]
-   cd crop-prediction-system
+   cd DSC761-agriculture
 
 2. **Install dependencies:**
-It's recommended to create a virtual environment first:
+    It's recommended to create a virtual environment first:
 
-pip install -r requirements.txt
+    `pip install -r requirements.txt`
 
 Running the Project
 1. Data Processing
-First, run the data processing script to prepare the datasets:
+    First, run the data processing script to prepare the datasets:
+    `/notebooks/012_data_preprocessing_improve.ipynb`
 
-/notebooks/012_data_preprocessing_improve.ipynb
-
-This will create the data/improve directory and save the processed CSVs there.
+    This will create the data/improve directory and save the processed CSVs there.
 
 2. Model Training
-Next, train the machine learning models:
+    Next, train the machine learning models:
 
-/notebooks/032_model_training.ipynb
+    `/notebooks/032_model_training.ipynb`
 
-This will create the models/improve directory and save all trained models and scalers.
+    This will create the models/improve directory and save all trained models and scalers.
 
 3. Model Evaluation (Optional, but recommended)
-To see detailed evaluation metrics and plots:
+    To see detailed evaluation metrics and plots:
 
-/notebooks/042_evaluation.ipynb
+    `/notebooks/042_evaluation.ipynb`
 
 4. Launch the Streamlit App
-Finally, run the interactive prediction dashboard:
+    Finally, run the interactive prediction dashboard:
 
-streamlit run streamlit_app_improve.py
-This will open the application in the web browser.
+    `streamlit run streamlit_app_improve.py`
+    This will open the application in the web browser.
 
 ✨ Credits
-This project was developed to demonstrate a complete machine learning pipeline for agricultural data, from raw data processing to interactive deployment with explainable AI.
+    This project was developed to demonstrate a complete machine learning pipeline for agricultural data, from raw data processing to interactive deployment with explainable AI.
