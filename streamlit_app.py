@@ -23,7 +23,7 @@ st.markdown(
 # ----------------------------
 @st.cache_data
 def load_data():
-    df = pd.read_csv("/data/processed/crop_data_pivot.csv")
+    df = pd.read_csv("data/processed/crop_data_pivot.csv")
     return df
 
 df = load_data()
@@ -32,7 +32,7 @@ df = load_data()
 all_elements = ["Production", "Area harvested", "Yield"]
 
 # ----------------------------
-# User selections
+# User Selections
 # ----------------------------
 st.sidebar.header("🔧 Prediction Settings")
 element_choice = st.sidebar.selectbox("🎯 Choose Target Element", all_elements)
@@ -66,26 +66,30 @@ if submitted:
     st.write("✅ Input Data:")
     st.dataframe(input_df)
 
-    model_key = f"{element_choice}_ANN" if model_choice == "ANN" else f"{element_choice}_{model_choice}"
-    model_dir = "models"
+    # Set correct paths
+    base_path = "notebooks/models"
+    model_key = f"{element_choice}_{model_choice.replace(' ', '')}"
+
 
     try:
         # ----------------------------
         # Load Model and Scaler
         # ----------------------------
         if model_choice == "ANN":
-            model_path = os.path.join(model_dir, f"{model_key}.h5")
-            scaler_path = os.path.join(model_dir, f"{model_key}_scaler.pkl")
+            model_path = os.path.join(base_path, f"{model_key}.h5")
+            scaler_path = os.path.join(base_path, f"{model_key}_scaler.pkl")
 
             if not os.path.exists(model_path) or not os.path.exists(scaler_path):
-                raise FileNotFoundError("Model or scaler file not found.")
+                raise FileNotFoundError("ANN model or scaler not found.")
 
             model = load_model(model_path)
             scaler = joblib.load(scaler_path)
 
-        else:
-            model_path = os.path.join(model_dir, f"{model_key}.pkl")
+            X_input = scaler.transform(input_df)
+            prediction = model.predict(X_input).flatten()[0]
 
+        else:
+            model_path = os.path.join(base_path, f"{model_key}.pkl")
             if not os.path.exists(model_path):
                 raise FileNotFoundError("Model file not found.")
 
@@ -93,19 +97,10 @@ if submitted:
             model = bundle["model"]
             scaler = bundle["scaler"]
 
-        # ----------------------------
-        # Predict
-        # ----------------------------
-        X_input = scaler.transform(input_df)
-
-        if model_choice == "ANN":
-            prediction = model.predict(X_input).flatten()[0]
-        else:
+            X_input = scaler.transform(input_df)
             prediction = model.predict(X_input)[0]
 
-        # ----------------------------
-        # Display Result
-        # ----------------------------
+        # Units display
         unit_map = {
             "Production": "tonnes",
             "Yield": "hg/ha",
@@ -113,10 +108,11 @@ if submitted:
         }
 
         unit = unit_map.get(element_choice, "")
-        formatted_prediction = f"{prediction:,.0f} {unit}"
+        formatted = f"{prediction:,.0f} {unit}"
 
+        # Display Result
         st.subheader("📊 Prediction Result")
-        st.success(f"**Predicted {element_choice}: {formatted_prediction}**")
+        st.success(f"✅ Predicted **{element_choice}**: {formatted}")
 
     except Exception as e:
         st.error(f"🚫 Error during prediction: {str(e)}")
