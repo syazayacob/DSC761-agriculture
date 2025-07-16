@@ -3,15 +3,16 @@ import pandas as pd
 import joblib
 import numpy as np
 import os
+import matplotlib.pyplot as plt # Import matplotlib.pyplot (still needed if you use any other matplotlib plots, but not for SHAP waterfall anymore)
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import StandardScaler
 
-import shap
+import shap # Still needed for explainer logic, even if not plotting force/waterfall
 import plotly.graph_objects as go
-import plotly.express as px # New import for interactive time series plots
+import plotly.express as px
 
-# For rendering SHAP force plots (which are HTML)
-import streamlit.components.v1 as components
+# For rendering SHAP force plots (which are HTML) - no longer directly used for force plot
+# import streamlit.components.v1 as components # No longer needed for SHAP force plot embedding
 
 # ----------------------------
 # Configuration
@@ -131,110 +132,52 @@ if submitted:
             st.success(f"✅ Predicted **{element_choice}**: {formatted_prediction}")
 
             # ----------------------------
-            # Explainable AI (SHAP Visualization)
+            # Explainable AI (Simple Visualization)
             # ----------------------------
-            st.subheader("🧠 Model Explanation (XAI)")
+            st.subheader("🧠 Model Explanation (XAI - Simple Plot)")
 
             if model_choice in ["Random Forest", "XGBoost", "Linear Regression"]:
                 try:
-                    st.markdown("Understanding how each feature influences the prediction:")
+                    st.markdown("Understanding the overall importance of each feature in the model:")
 
-                    # Prepare background data for SHAP explainer
-                    # Use a sample of the original data, transformed by the scaler
-                    # Ensure background data has the same columns as the input
-                    background_df = df[feature_cols].copy()
-                    # Explicitly cast background_df columns to float before scaling
-                    for col in background_df.columns:
-                        background_df[col] = background_df[col].astype(float)
-
-                    # Sample up to 100 rows or the entire dataset if smaller
-                    background = pd.DataFrame(
-                        scaler.transform(background_df.sample(n=min(100, len(background_df)), random_state=42)),
-                        columns=feature_cols_str
-                    )
-
-                    # Transform the single input instance for SHAP
-                    # Use the already float-casted input_df_for_scaling
-                    X_input_transformed = pd.DataFrame(
-                        scaler.transform(input_df_for_scaling),
-                        columns=feature_cols_str
-                    )
-
-                    # Initialize SHAP Explainer based on model type
+                    feature_importances = None
                     if model_choice in ["Random Forest", "XGBoost"]:
-                        explainer = shap.TreeExplainer(model, background)
+                        # For tree-based models, use feature_importances_
+                        feature_importances = model.feature_importances_
                     elif model_choice == "Linear Regression":
-                        explainer = shap.LinearExplainer(model, background)
+                        # For linear models, use absolute coefficients as importance
+                        feature_importances = np.abs(model.coef_)
+                    
+                    if feature_importances is not None:
+                        # Create a DataFrame for plotting
+                        importance_df = pd.DataFrame({
+                            'Feature': feature_cols_str,
+                            'Importance': feature_importances
+                        })
+                        # Sort by importance for better visualization
+                        importance_df = importance_df.sort_values(by='Importance', ascending=False)
+
+                        # Create a simple bar chart using Plotly Express
+                        fig_importance = px.bar(
+                            importance_df,
+                            x='Importance',
+                            y='Feature',
+                            orientation='h', # Horizontal bars
+                            title=f"Feature Importance for {model_choice} Model",
+                            labels={'Importance': 'Importance Score', 'Feature': 'Feature Name'},
+                            template="plotly_white"
+                        )
+                        fig_importance.update_layout(yaxis={'categoryorder':'total ascending'}) # Ensure features are ordered correctly
+                        st.plotly_chart(fig_importance, use_container_width=True)
                     else:
-                        # Fallback for other model types if needed, though less efficient
-                        explainer = shap.KernelExplainer(model.predict, background)
-
-                    # Calculate SHAP values for the input instance
-                    shap_values = explainer.shap_values(X_input_transformed)
-
-                    # If shap_values is a list (e.g., for multi-output models, or some tree explainers),
-                    # take the first element for single-output regression
-                    if isinstance(shap_values, list):
-                        shap_values = shap_values[0]
-
-                    # Get the expected value (base value) for the SHAP plots
-                    expected_value = explainer.expected_value if hasattr(explainer, 'expected_value') else float(np.mean(model.predict(background)))
-
-                    # ------------------------------------------------------------------
-                    # SHAP Force Plot (Individual Prediction Explanation)
-                    # ------------------------------------------------------------------
-                    st.markdown("### 📈 Individual Prediction Explanation (SHAP Force Plot)")
-                    st.markdown(
-                        "The force plot visualizes how each feature pushes the prediction "
-                        "from the base value (average prediction) to the final predicted value."
-                    )
-                    shap_html = shap.force_plot(
-                        expected_value,
-                        shap_values[0], # SHAP values for the first (and only) input instance
-                        X_input_transformed.iloc[0], # Original feature values for the instance (as Series)
-                        feature_names=feature_cols_str,
-                        matplotlib=False # Ensure HTML output
-                    )
-                    # Render the HTML output in Streamlit
-                    components.html(shap_html.html(), height=300, scrolling=True)
-
-                    # ------------------------------------------------------------------
-                    # SHAP Waterfall Plot (Feature Contribution Breakdown)
-                    # ------------------------------------------------------------------
-                    st.markdown("### 📊 Feature Contribution Waterfall Plot")
-                    st.markdown(
-                        "The waterfall plot shows the contribution of each feature "
-                        "to the prediction, ordered by magnitude."
-                    )
-                    # Create a SHAP Explanation object for the waterfall plot
-                    explanation_obj = shap.Explanation(
-                        values=shap_values[0],
-                        base_values=expected_value,
-                        data=X_input_transformed.iloc[0].values, # .values converts Series to numpy array
-                        feature_names=feature_cols_str
-                    )
-                    fig_waterfall = shap.plots.waterfall(
-                        explanation_obj,
-                        show=False # Don't show immediately, return figure
-                    )
-                    st.pyplot(fig_waterfall) # Display Matplotlib figure in Streamlit
+                        st.info("ℹ️ Feature importance calculation not available for this model type or configuration.")
 
                 except Exception as ex:
-                    st.warning(f"⚠️ SHAP explanation visualization not available for this model/data combination: {str(ex)}")
-                    st.info("Ensure the selected model type is compatible with SHAP explainers and data is correctly formatted. Some models or data structures might cause issues.")
+                    st.warning(f"⚠️ Simple explanation visualization not available for this model/data combination: {str(ex)}")
+                    st.info("Ensure the selected model type is compatible with feature importance extraction and data is correctly formatted.")
 
             elif model_choice == "ANN":
-                st.info("ℹ️ SHAP visualization for ANN models is not directly supported in this app due to computational complexity. Consider using simpler models like Random Forest or XGBoost for better interpretability.")
-
-            # ----------------------------
-            # Model Comparison (Conceptual)
-            # ----------------------------
-            st.subheader("🔄 Model Comparison Notes")
-            st.info(
-                "To compare models, select a different model from the sidebar and click 'Predict' again "
-                "with the same input features. Observe how the predicted value changes. "
-                "For a deeper comparison, you would typically evaluate models on a test dataset using metrics like R-squared, Mean Absolute Error (MAE), or Root Mean Squared Error (RMSE)."
-            )
+                st.info("ℹ️ Simple feature importance (like coefficients or tree-based importances) is not directly applicable to ANN models in this app. ANNs are complex and require more advanced XAI techniques for interpretability.")
 
             # ----------------------------
             # 3D Visualization
@@ -289,39 +232,42 @@ st.markdown("Explore historical data for different crop elements, items, and are
 # Get unique values for filters from the loaded DataFrame
 unique_areas = df["Area"].unique()
 unique_items = df["Item"].unique()
-unique_elements_ts = df["Element"].unique() # All elements are relevant for historical view
+# Assuming 'Production', 'Area harvested', 'Yield' are direct columns in the pivoted CSV
+unique_elements_ts = all_elements # Use the predefined list of elements as they are now columns
 
 # Time series filters using Streamlit selectboxes
 selected_area = st.selectbox(
     "Select Area",
     unique_areas,
-    index=np.where(unique_areas == "Afghanistan")[0][0] if "Afghanistan" in unique_areas else 0
+    index=int(np.where(unique_areas == "Afghanistan")[0][0]) if "Afghanistan" in unique_areas else 0
 )
 selected_item = st.selectbox(
     "Select Item",
     unique_items,
-    index=np.where(unique_items == "Maize")[0][0] if "Maize" in unique_items else 0
+    index=int(np.where(unique_items == "Maize")[0][0]) if "Maize" in unique_items else 0
 )
 selected_element_ts = st.selectbox(
     "Select Element for Trend",
     unique_elements_ts,
-    index=np.where(unique_elements_ts == "Production")[0][0] if "Production" in unique_elements_ts else 0
+    # Set default index based on 'Production' if available, otherwise first element
+    index=unique_elements_ts.index("Production") if "Production" in unique_elements_ts else 0
 )
 
 # Filter data for the time series plot based on user selections
+# Removed filtering by 'Element' column as it's assumed to be pivoted
 mask_ts = (df["Area"] == selected_area) & \
-          (df["Item"] == selected_item) & \
-          (df["Element"] == selected_element_ts)
+          (df["Item"] == selected_item)
 df_plot_ts = df[mask_ts].sort_values("Year")
 
 if not df_plot_ts.empty:
     # Create an interactive line plot using Plotly Express
+    # The 'y' axis now directly refers to the selected element's column name
     fig_ts = px.line(
         df_plot_ts,
         x="Year",
-        y="Value",
+        y=selected_element_ts, # Changed from "Value" to selected_element_ts
         title=f"Historical {selected_item} {selected_element_ts} in {selected_area}",
-        labels={"Value": f"{selected_element_ts} ({unit_map.get(selected_element_ts, 'units')})"},
+        labels={selected_element_ts: f"{selected_element_ts} ({unit_map.get(selected_element_ts, 'units')})"}, # Update label key
         template="plotly_white" # A clean, professional template
     )
     fig_ts.update_traces(mode='lines+markers', hovertemplate='Year: %{x}<br>Value: %{y:,.0f}') # Add markers and custom hover info
