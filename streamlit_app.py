@@ -77,15 +77,15 @@ if submitted:
         # Load Model and Scaler
         # ----------------------------
         if model_choice == "ANN":
-            model_path = os.path.join(base_path, f"{model_key}.h5")
-            model_path = os.path.join(base_path, f"{model_key}")
+            model_path = os.path.join(base_path, f"{model_key}.keras")
+            #model_path = os.path.join(base_path, f"{model_key}")
             scaler_path = os.path.join(base_path, f"{model_key}_scaler.pkl")
 
             if not os.path.exists(model_path) or not os.path.exists(scaler_path):
                 raise FileNotFoundError("ANN model or scaler not found.")
 
-            #model = load_model(model_path)
-            model = keras.models.load_model(model_path)
+            model = load_model(model_path)
+            #model = keras.models.load_model(model_path)
             scaler = joblib.load(scaler_path)
 
             X_input = scaler.transform(input_df)
