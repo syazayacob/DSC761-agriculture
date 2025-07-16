@@ -10,6 +10,9 @@ import shap
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
+import plotly.express as px
+import plotly.graph_objects as go
+
 
 # ----------------------------
 # Configuration
@@ -129,14 +132,28 @@ if submitted:
         # ----------------------------
         # Explainable AI (SHAP) - XAI
         # ----------------------------
-        if model_choice != "ANN":  # SHAP works well with tree-based or linear models
+        if model_choice in ["Random Forest", "XGBoost", "Linear Regression"]:
             try:
                 st.subheader("🧠 Model Explanation (XAI)")
-                explainer = shap.Explainer(model, X_input)
-                shap_values = explainer(X_input)
+                # Sample background data
+                background = pd.DataFrame(scaler.transform(df[feature_cols].sample(n=50, random_state=42)))
+                X_input_transformed = scaler.transform(input_df)
 
-                st.set_option('deprecation.showPyplotGlobalUse', False)
-                st.pyplot(shap.plots.waterfall(shap_values[0], max_display=10))
+                # Choose appropriate SHAP explainer
+                if model_choice in ["Random Forest", "XGBoost"]:
+                    explainer = shap.TreeExplainer(model, background)
+                elif model_choice == "Linear Regression":
+                    explainer = shap.LinearExplainer(model, background)
+                else:
+                    explainer = shap.Explainer(model, background)
+
+                shap_values = explainer(X_input_transformed)
+
+                # Waterfall plot using explicit fig
+                fig, ax = plt.subplots(figsize=(8, 5))
+                shap.plots.waterfall(shap_values[0], max_display=5, show=False)
+                st.pyplot(bbox_inches='tight')
+
             except Exception as ex:
                 st.warning(f"⚠️ SHAP explanation not available: {str(ex)}")
 
@@ -147,18 +164,27 @@ if submitted:
         st.subheader("📉 3D Feature Visualization")
 
         # Select 2 features to visualize against the prediction
-        x_feature = st.selectbox("X-axis Feature", feature_cols, index=0)
-        y_feature = st.selectbox("Y-axis Feature", feature_cols, index=1 if len(feature_cols) > 1 else 0)
+        x_feature = st.selectbox("X-axis Feature", feature_cols, index=0, key="x_axis")
+        y_feature = st.selectbox("Y-axis Feature", feature_cols, index=1 if len(feature_cols) > 1 else 0, key="y_axis")
 
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.scatter(input_df[x_feature], input_df[y_feature], prediction, c='r', marker='o', s=100)
+        fig = go.Figure(data=[go.Scatter3d(
+            x=input_df[x_feature],
+            y=input_df[y_feature],
+            z=[prediction],
+            mode='markers',
+            marker=dict(size=8, color='red'),
+        )])
 
-        ax.set_xlabel(x_feature)
-        ax.set_ylabel(y_feature)
-        ax.set_zlabel(element_choice)
+        fig.update_layout(
+            scene=dict(
+                xaxis_title=x_feature,
+                yaxis_title=y_feature,
+                zaxis_title=element_choice
+            ),
+            margin=dict(l=0, r=0, b=0, t=0)
+        )
 
-        st.pyplot(fig)
+        st.plotly_chart(fig)
 
 
     except Exception as e:
