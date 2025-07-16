@@ -120,6 +120,6 @@ Running the Project
 
     `streamlit run streamlit_app_improve.py`
     This will open the application in the web browser.
-###
-✨ Credits
+--
+## ✨ Credits
     This project was developed to demonstrate a complete machine learning pipeline for agricultural data, from raw data processing to interactive deployment with explainable AI.
