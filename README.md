@@ -5,12 +5,12 @@
 This repository hosts a machine learning project focused on predicting key agricultural metrics: **Production**, **Area harvested**, and **Yield**. It includes data processing, exploratory data analysis (EDA), model training, evaluation, and a Streamlit application for interactive predictions and historical data visualization.
 
 ## 📁 Folder Structure
-DSX761-agriculture/
+DSC761-agriculture/
 ├── data/
 │   ├── crop1.csv                     # Raw input dataset
 │   └── improve/                      # Processed data outputs
 │       ├── crop1_clean.csv
-│       └── crop_data_pivot_log.csv
+│       ├── crop_data_pivot_log.csv
 │       └── crop_data_pivot.csv
 ├── models/
 │   └── improve/                      # Trained model files (.h5 for ANN, .pkl for others)
@@ -23,9 +23,11 @@ DSX761-agriculture/
 │   ├── 022_visualization.ipynb
 │   ├── 032_model_training.ipynb
 │   └── 042_evaluation.ipynb
-├── streamlit_app_improve.py                  # Streamlit dashboard for predictions and trends
-├── requirements.txt                  # Required Python packages
+├── streamlit/
+│   └── streamlit_app_improve.py     # Streamlit dashboard for predictions and trends
+├── requirements.txt                 # Required Python packages
 └── README.md
+
 
 
 ---
