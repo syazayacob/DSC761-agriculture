@@ -11,9 +11,6 @@ import shap # Still needed for explainer logic, even if not plotting force/water
 import plotly.graph_objects as go
 import plotly.express as px
 
-# For rendering SHAP force plots (which are HTML) - no longer directly used for force plot
-# import streamlit.components.v1 as components # No longer needed for SHAP force plot embedding
-
 # ----------------------------
 # Configuration
 # ----------------------------
