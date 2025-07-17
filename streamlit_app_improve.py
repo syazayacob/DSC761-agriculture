@@ -37,7 +37,7 @@ def load_data():
     try:
         # Ensure the path is correct relative to where the script is run
         # Assuming 'data/improve/crop_data_pivot_log.csv' exists
-        df = pd.read_csv("data/improve/crop_data_pivot_log.csv")
+        df = pd.read_csv("../data/improve/crop_data_pivot_log.csv")
         # Ensure 'Year' column is integer for consistent filtering
         df['Year'] = df['Year'].astype(int)
         return df
