@@ -5,31 +5,33 @@
 This repository hosts a machine learning project focused on predicting key agricultural metrics: **Production**, **Area harvested**, and **Yield**. It includes data processing, exploratory data analysis (EDA), model training, evaluation, and a Streamlit application for interactive predictions and historical data visualization.
 
 ## 📁 Folder Structure
-<<<<<<< HEAD
-crop-prediction-system/                                               ├── data/
-=======
+```plaintext
 DSX761-agriculture/
 ├── data/
->>>>>>> 64ee43eba6fd5523ef1b350b86bdb3c4920e9b1e
-│   ├── crop1.csv                     # Raw input dataset
-│   └── improve/                      # Processed data outputs
-│       ├── crop1_clean.csv
-│       └── crop_data_pivot_log.csv
-│       └── crop_data_pivot.csv
+│ ├── crop1.csv # Raw input dataset
+│ └── improve/ # Processed data outputs
+│ ├── crop1_clean.csv
+│ ├── crop_data_pivot_log.csv
+│ └── crop_data_pivot.csv
 ├── models/
-│   └── improve/                      # Trained model files (.h5 for ANN, .pkl for others)
-│       ├── Production_ANN.h5
-│       ├── Production_ANN_scaler.pkl
-│       ├── Production_RandomForest.pkl
-│       └── ... (other models and scalers for Area harvested, Yield)
-├── notebooks/                        # Source code for data processing, training, etc.
-│   ├── 012_data_preprocessing_improve.ipynb
-│   ├── 022_visualization.ipynb
-│   ├── 032_model_training.ipynb
-│   └── 042_evaluation.ipynb
-├── streamlit_app_improve.py                  # Streamlit dashboard for predictions and trends
-├── requirements.txt                  # Required Python packages
+│ └── improve/ # Trained model files (.h5 for ANN, .pkl for others)
+│ ├── Production_ANN.h5
+│ ├── Production_ANN_scaler.pkl
+│ ├── Production_RandomForest.pkl
+│ └── ... (other models and scalers for Area harvested, Yield)
+├── notebooks/ # Source code for data processing, training, etc.
+│ ├── 012_data_preprocessing_improve.ipynb
+│ ├── 022_visualization.ipynb
+│ ├── 032_model_training.ipynb
+│ └── 042_evaluation.ipynb
+├── streamlit/
+│ └── streamlit_app_improve.py # Streamlit dashboard for predictions and trends
+├── requirements.txt # Required Python packages
 └── README.md
+```
+
+
+
 
 
 ---
@@ -118,6 +120,6 @@ Running the Project
 
     `streamlit run streamlit_app_improve.py`
     This will open the application in the web browser.
-
-✨ Credits
+--
+## ✨ Credits
     This project was developed to demonstrate a complete machine learning pipeline for agricultural data, from raw data processing to interactive deployment with explainable AI.
