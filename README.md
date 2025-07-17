@@ -5,7 +5,12 @@
 This repository hosts a machine learning project focused on predicting key agricultural metrics: **Production**, **Area harvested**, and **Yield**. It includes data processing, exploratory data analysis (EDA), model training, evaluation, and a Streamlit application for interactive predictions and historical data visualization.
 
 ## 📁 Folder Structure
+<<<<<<< HEAD
 crop-prediction-system/                                               ├── data/
+=======
+DSX761-agriculture/
+├── data/
+>>>>>>> 64ee43eba6fd5523ef1b350b86bdb3c4920e9b1e
 │   ├── crop1.csv                     # Raw input dataset
 │   └── improve/                      # Processed data outputs
 │       ├── crop1_clean.csv
@@ -32,7 +37,7 @@ crop-prediction-system/                                               ├── 
 ## 📊 Contents
 
 ### 1. Data Processing
-The `src/data_processing.py` script performs the following steps:
+The `012_data_preprocessing_improve.ipynb` script performs the following steps:
 - **Filtering**: Selects relevant elements ('Production', 'Area harvested', 'Yield') and years (1961-2020).
 - **Missing Value Handling**: Drops rows with null values in the 'Value' column.
 - **Winsorization**: Applies winsorization to 'Value' to handle outliers.
@@ -42,7 +47,7 @@ The `src/data_processing.py` script performs the following steps:
 - **Saving**: Exports cleaned and pivoted datasets to `data/improve/`.
 
 ### 2. Visualization
-The `src/visualization.py` script generates various plots to understand the data:
+The `022_visualization.ipynb` script generates various plots to understand the data:
 - **Value Distribution**: Histograms comparing original, winsorized, and log-transformed values.
 - **Element Count by Decade**: Bar plot showing the frequency of different elements across decades.
 - **Top 10 Items**: Bar plot of the most frequently reported crop items.
@@ -51,17 +56,17 @@ The `src/visualization.py` script generates various plots to understand the data
 - **Time Series Plot**: Shows historical trends for specific Area, Item, and Element combinations (e.g., Maize Production in Afghanistan).
 
 ### 3. Model Training
-The `src/model_training.py` script trains multiple regression models to predict 'Production', 'Area harvested', and 'Yield':
+The `032_model_training.ipynb` script trains multiple regression models to predict 'Production', 'Area harvested', and 'Yield':
 - **Models**:
     - Artificial Neural Network (ANN)
     - Random Forest Regressor
     - Linear Regression
     - XGBoost Regressor
 - **Process**: For each target, models are trained using other elements and 'Year' as features. Data is scaled using `StandardScaler` and split into training/testing sets.
-- **Output**: Trained models and their respective scalers are saved to `models/improve/`.
+- **Output**: Trained models and their respective scalers are saved to `models`.
 
 ### 4. Model Evaluation
-The `src/model_evaluation.py` script loads the trained models and evaluates their performance on the test set:
+The `042_evaluation.ipynb` script loads the trained models and evaluates their performance on the test set:
 - **Metrics**: Reports Mean Squared Error (MSE) and R² Score for each model and target.
 - **Visualizations**: Generates scatter plots of actual vs. predicted values and a bar plot comparing R² scores across all models and targets.
 
