@@ -277,4 +277,3 @@ else:
     st.info("No historical data found for the selected combination. Please adjust filters.")
 
 st.markdown("---")
-st.markdown("Developed with ❤️ using Streamlit, Scikit-learn, Keras, SHAP, and Plotly.")
