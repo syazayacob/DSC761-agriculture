@@ -8,7 +8,7 @@ seaborn
 plotly
 
 # Model Training & Evaluation
-scikit-learn
+scikit-learn==1.5.1
 xgboost
 tensorflow>=2.19.0
 joblib
