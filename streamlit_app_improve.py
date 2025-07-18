@@ -11,6 +11,8 @@ import shap # Still needed for explainer logic, even if not plotting force/water
 import plotly.graph_objects as go
 import plotly.express as px
 
+from huggingface_hub import hf_hub_download
+
 # ----------------------------
 # Configuration
 # ----------------------------
@@ -37,7 +39,11 @@ def load_data():
     try:
         # Ensure the path is correct relative to where the script is run
         # Assuming 'data/improve/crop_data_pivot_log.csv' exists
-        df = pd.read_csv("../data/improve/crop_data_pivot_log.csv")
+        #df = pd.read_csv("../data/improve/crop_data_pivot_log.csv")
+        url = "https://huggingface.co/datasets/syazayacob/crop_data_pivot_log/resolve/main/crop_data_pivot_log.csv"
+        df = pd.read_csv(url)
+
+
         # Ensure 'Year' column is integer for consistent filtering
         df['Year'] = df['Year'].astype(int)
         return df
@@ -88,38 +94,25 @@ if submitted:
 
     with st.spinner("⏳ Predicting..."):
         try:
-            base_path = "models" # Assuming 'models' directory exists at the same level as the script
+            repo_id = "syazayacob/crop_models"  # ✅ Your public repo on Hugging Face
             model_key = f"{element_choice}_{model_choice.replace(' ', '')}"
-            scaler_path = os.path.join(base_path, f"{model_key}_scaler.pkl")
 
-            # Load model and scaler based on model choice
             if model_choice == "ANN":
-                model_path = os.path.join(base_path, f"{model_key}.h5")
-                if not os.path.exists(model_path):
-                    raise FileNotFoundError(f"ANN Model not found at: {model_path}")
-                if not os.path.exists(scaler_path):
-                    raise FileNotFoundError(f"Scaler for ANN not found at: {scaler_path}")
+                model_path = hf_hub_download(repo_id=repo_id, filename=f"{model_key}.h5")
+                scaler_path = hf_hub_download(repo_id=repo_id, filename=f"{model_key}_scaler.pkl")
+
                 model = load_model(model_path)
                 scaler = joblib.load(scaler_path)
             else:
-                model_bundle_path = os.path.join(base_path, f"{model_key}.pkl")
-                if not os.path.exists(model_bundle_path):
-                    raise FileNotFoundError(f"Model bundle not found at: {model_bundle_path}")
-                bundle = joblib.load(model_bundle_path)
+                bundle_path = hf_hub_download(repo_id=repo_id, filename=f"{model_key}.pkl")
+                bundle = joblib.load(bundle_path)
                 model, scaler = bundle["model"], bundle["scaler"]
 
-            # Transform input features using the loaded scaler
-            # Explicitly cast input_df columns to float before scaling
-            input_df_for_scaling = input_df.copy()
-            for col in input_df_for_scaling.columns:
-                input_df_for_scaling[col] = input_df_for_scaling[col].astype(float)
+            input_df_for_scaling = input_df.astype(float)
             X_input = scaler.transform(input_df_for_scaling)
-            
-            # Make prediction
-            # For ANN, prediction result might be a 2D array, flatten it.
-            prediction = float(model.predict(X_input).flatten()[0] if model_choice == "ANN" else model.predict(X_input)[0])
 
-            # Format the prediction with appropriate units
+            prediction = float(model.predict(X_input).flatten()[0] if model_choice == "ANN"
+                               else model.predict(X_input)[0])
             formatted_prediction = f"{prediction:,.0f} {unit_map.get(element_choice, '')}"
 
             # ----------------------------
