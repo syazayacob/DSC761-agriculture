@@ -32,7 +32,8 @@ DSX761-agriculture/
 └── README.md
 ```
 
-
+## DATASET
+use third party drive = Hugging Face (syazayacob)
 
 
 
