@@ -1,5 +1,7 @@
 # DSC761-agriculture
 
+https://dsc761-agriculture.streamlit.app/
+
 # 🌾 Agricultural Crop Prediction System
 
 This repository hosts a machine learning project focused on predicting key agricultural metrics: **Production**, **Area harvested**, and **Yield**. It includes data processing, exploratory data analysis (EDA), model training, evaluation, and a Streamlit application for interactive predictions and historical data visualization.
