@@ -10,7 +10,7 @@ plotly
 # Model Training & Evaluation
 scikit-learn
 xgboost
-tensorflow
+tensorflow==2.13.0
 joblib
 scipy
 
