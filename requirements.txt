@@ -1,27 +1,27 @@
 # Core
-pandas>=1.5.0
-numpy>=1.23.0
+pandas
+numpy
 
 # Visualization
-matplotlib>=3.5.0
-seaborn>=0.11.0
-plotly>=5.5.0
+matplotlib
+seaborn
+plotly
 
 # Model Training & Evaluation
-scikit-learn>=1.1.0
-xgboost>=1.7.0
+scikit-learn
+xgboost
 tensorflow>=2.11.0
-joblib>=1.2.0
-scipy>=1.9.0
+joblib
+scipy
 
 # SHAP for model explainability
-shap>=0.41.0
+shap
 
 # Web App
-streamlit>=1.20.0
+streamlit
 
 # Optional - for compatibility and performance
-typing-extensions>=4.5.0
+typing-extensions
 
 huggingface_hub>=0.21.4
 python-dotenv
