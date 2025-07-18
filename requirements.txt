@@ -23,5 +23,5 @@ streamlit
 # Optional - for compatibility and performance
 typing-extensions
 
-huggingface_hub
+huggingface_hub>=0.21.4
 python-dotenv
