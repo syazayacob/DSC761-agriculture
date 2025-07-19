@@ -268,3 +268,4 @@ else:
     st.info("No historical data found for the selected combination. Please adjust filters.")
 
 st.markdown("---")
+
