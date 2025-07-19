@@ -30,7 +30,8 @@ unit_map = {"Production": "tonnes", "Yield": "hg/ha", "Area harvested": "ha"}
 # ----------------------------
 # Load Data
 # ----------------------------
-@st.cache_data
+#@st.cache_data
+@st.cache_resource
 def load_data():
     """
     Loads the crop data from a CSV file.
